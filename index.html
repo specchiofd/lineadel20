@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Linea del 20 Digitale - Bortolato</title>
+    <style>
+        /* 
+         * SEZIONE CSS
+         */
+
+        :root {
+            --bg-color: #f4f7f6;
+            --base-color: #2c3e50;
+            --key-red: #e74c3c;
+            --key-red-dark: #c0392b;
+            --key-green: #2ecc71;
+            --key-green-dark: #27ae60;
+            --text-color: #ffffff;
+            --label-color: #333;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            user-select: none; /* Evita selezione testo ovunque */
+        }
+
+        /* Contenitore statistiche */
+        .stats-container {
+            display: flex;
+            gap: 40px;
+            margin-bottom: 30px;
+            font-size: 1.5rem;
+            color: var(--label-color);
+            font-weight: bold;
+            text-align: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Base della Linea */
+        .base-linea {
+            background-color: var(--base-color);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            gap: 5px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            max-width: 100%;
+            overflow-x: auto;
+            transition: all 0.3s ease;
+        }
+
+        /* Tasto base */
+        .key {
+            width: 40px;
+            height: 100px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-color);
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.27), 
+                        background-color 0.2s,
+                        color 0.3s; /* Transizione fluida per il testo */
+            
+            /* Stato abbassato */
+            transform: translateY(15px); 
+            opacity: 0.9;
+        }
+
+        /* Gestione Nascondi Numeri:
+           Se il contenitore padre ha la classe .hide-numbers,
+           il testo dentro .key diventa trasparente */
+        .base-linea.hide-numbers .key {
+            color: transparent;
+        }
+
+        .key.red {
+            background-color: var(--key-red);
+            border-bottom: 4px solid var(--key-red-dark);
+        }
+
+        .key.green {
+            background-color: var(--key-green);
+            border-bottom: 4px solid var(--key-green-dark);
+        }
+
+        /* Spaziatura gruppi di 5 */
+        .key:nth-child(5), 
+        .key:nth-child(10), 
+        .key:nth-child(15) {
+            margin-right: 15px;
+        }
+
+        /* Stato Attivo (Alzato) */
+        .key.active {
+            transform: translateY(-15px); 
+            opacity: 1;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        /* Area Pulsanti di Controllo */
+        .controls {
+            margin-top: 40px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Stile Pulsanti */
+        .btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: background-color 0.2s, transform 0.1s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Colore pulsante Reset */
+        .btn-reset {
+            background-color: #3498db;
+        }
+        .btn-reset:hover { background-color: #2980b9; }
+
+        /* Colore pulsante Nascondi/Mostra */
+        .btn-toggle {
+            background-color: #f39c12;
+        }
+        .btn-toggle:hover { background-color: #d35400; }
+
+
+        /* Responsive Mobile */
+        @media (max-width: 600px) {
+            .base-linea {
+                padding: 10px;
+                gap: 2px;
+            }
+            .key {
+                width: 25px;
+                height: 70px;
+                font-size: 0.9rem;
+            }
+            .key:nth-child(5), 
+            .key:nth-child(10), 
+            .key:nth-child(15) {
+                margin-right: 8px;
+            }
+            .stats-container {
+                font-size: 1.1rem;
+                gap: 20px;
+            }
+            .controls {
+                gap: 10px;
+            }
+            .btn {
+                font-size: 1rem;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Area Statistiche -->
+    <div class="stats-container">
+        <div class="stat-box">Tasti alzati: <span id="count-display">0</span></div>
+        <div class="stat-box">Somma: <span id="sum-display">0</span></div>
+    </div>
+
+    <!-- La Linea del 20 -->
+    <!-- ID aggiuntivo per manipolazione classi -->
+    <div class="base-linea" id="keyboard-container">
+        <!-- Tasti generati via JS -->
+    </div>
+
+    <!-- Pulsanti di Controllo -->
+    <div class="controls">
+        <button class="btn btn-toggle" id="toggle-nums-btn">Nascondi numeri</button>
+        <button class="btn btn-reset" id="reset-btn">Azzera tutto</button>
+    </div>
+
+    <!-- Audio (Placeholder) -->
+    <audio id="audio-up" src="click-up.mp3" preload="auto"></audio>
+    <audio id="audio-reset" src="reset.mp3" preload="auto"></audio>
+
+    <script>
+        /*
+         * SEZIONE JAVASCRIPT
+         */
+
+        const container = document.getElementById('keyboard-container');
+        const countDisplay = document.getElementById('count-display');
+        const sumDisplay = document.getElementById('sum-display');
+        const resetBtn = document.getElementById('reset-btn');
+        const toggleNumsBtn = document.getElementById('toggle-nums-btn');
+        
+        const audioUp = document.getElementById('audio-up');
+        const audioReset = document.getElementById('audio-reset');
+
+        // Stato: true = alzato, false = abbassato
+        let keysState = new Array(20).fill(false);
+        
+        // Stato visibilità numeri: true = visibili, false = nascosti
+        let numbersVisible = true;
+
+        // Funzione Audio
+        function playSound(audioElement) {
+            if(audioElement) {
+                const soundClone = audioElement.cloneNode(); 
+                soundClone.volume = 0.5;
+                soundClone.play().catch(() => {}); // Ignora errori
+            }
+        }
+
+        // Aggiorna Conteggi
+        function updateStats() {
+            const count = keysState.filter(state => state === true).length;
+            const sum = keysState.reduce((acc, isActive, index) => {
+                return isActive ? acc + (index + 1) : acc;
+            }, 0);
+
+            countDisplay.textContent = count;
+            sumDisplay.textContent = sum;
+        }
+
+        // Gestione Click Tasto
+        function toggleKey(index, element) {
+            keysState[index] = !keysState[index];
+            const isActive = keysState[index];
+
+            if (isActive) {
+                element.classList.add('active');
+                playSound(audioUp);
+            } else {
+                element.classList.remove('active');
+                playSound(audioUp); 
+            }
+            updateStats();
+        }
+
+        // Inizializzazione Tasti
+        function initBoard() {
+            container.innerHTML = ''; // Pulisce eventuale contenuto precedente
+            for (let i = 1; i <= 20; i++) {
+                const keyDiv = document.createElement('div');
+                keyDiv.classList.add('key');
+                
+                // Assegnazione Colori
+                if (i <= 10) keyDiv.classList.add('red');
+                else keyDiv.classList.add('green');
+
+                keyDiv.textContent = i;
+
+                // Event Listener
+                keyDiv.addEventListener('click', () => toggleKey(i - 1, keyDiv));
+
+                container.appendChild(keyDiv);
+            }
+        }
+
+        // LOGICA RESET
+        resetBtn.addEventListener('click', () => {
+            keysState.fill(false);
+            const allKeys = document.querySelectorAll('.key');
+            allKeys.forEach(k => k.classList.remove('active'));
+            updateStats();
+            playSound(audioReset);
+        });
+
+        // LOGICA MOSTRA/NASCONDI NUMERI
+        toggleNumsBtn.addEventListener('click', () => {
+            numbersVisible = !numbersVisible; // Inverte lo stato
+
+            if (numbersVisible) {
+                // Rimuove la classe che nasconde i numeri
+                container.classList.remove('hide-numbers');
+                toggleNumsBtn.textContent = "Nascondi numeri";
+            } else {
+                // Aggiunge la classe che nasconde i numeri
+                container.classList.add('hide-numbers');
+                toggleNumsBtn.textContent = "Mostra numeri";
+            }
+        });
+
+        // Avvio
+        initBoard();
+
+    </script>
+</body>
+</html>
